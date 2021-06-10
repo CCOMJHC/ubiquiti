@@ -16,6 +16,7 @@ Quotes or other nonalpha-numeric characters in the radio's hostname will break t
 import rospy
 import ubiquiti.UbiquitiWifi as ubwf
 from ubiquiti.msg import UbiquitiRadio
+from sensor_msgs.msg import NavSatFix
 
 rospy.init_node('ubiquiti')
     
@@ -25,7 +26,8 @@ def run():
     U.passwd = 'Chas3ocean!'
     U.getAirOSVersion()
     
-    
+
+
     rate = rospy.Rate(0.5)    
     pubs = {}
     while not rospy.is_shutdown():
@@ -35,15 +37,38 @@ def run():
             U.getstatus()
         except:
             rospy.loginfo('Failed to get status from Ubiquiti Radio.')
-    
+
         if U.statusraw is not None:
+            
+            localhostname = U.status['host']['hostname'].replace(' ','')
+
+            posPub = rospy.Publisher('/ubiquiti/' + 
+                        localhostname + '/gps', NavSatFix,queue_size=10)
+
+            # Local radio GPS information
+            N = NavSatFix()
+            N.header.stamp = rospy.Time.now()
+            N.header.frame_id = 'mobile5G'
+            N.altitude = U.status['gps']['alt']
+            N.latitude = U.status['gps']['lat']
+            N.longitude = U.status['gps']['lon']
+            if int(U.status['gps']['fix']) > 0:
+                N.status.status = N.status.STATUS_FIX
+            else:
+                N.status.status = N.status.STATUS_NO_FIX
+            N.position_covariance_type = 0
+            posPub.publish(N)
+
             # Publish messages to a new topic for each new station seen.
+            
             for station in U.status['wireless']['sta']:
                 hostname = station['remote']['hostname'].replace(' ','')
                 
                 if hostname not in pubs.keys():
                     pubs[hostname] = rospy.Publisher('/ubiquiti/' + 
                                 hostname, UbiquitiRadio,queue_size=10)
+                
+
                     
                 M = UbiquitiRadio()
                 M.header.stamp = rospy.Time.now()
@@ -74,6 +99,9 @@ def run():
                 
                 M.raw_status = U.statusraw       
                 pubs[hostname].publish(M)
+
+ 
+
         rate.sleep()
  
  
