@@ -46,19 +46,20 @@ def run():
             posPub = rospy.Publisher('/ubiquiti/' + 
                         localhostname + '/gps', NavSatFix,queue_size=10)
 
-            # Local radio GPS information
-            N = NavSatFix()
-            N.header.stamp = rospy.Time.now()
-            N.header.frame_id = 'mobile5G'
-            N.altitude = U.status['gps']['alt']
-            N.latitude = U.status['gps']['lat']
-            N.longitude = U.status['gps']['lon']
-            if int(U.status['gps']['fix']) > 0:
-                N.status.status = N.status.STATUS_FIX
-            else:
-                N.status.status = N.status.STATUS_NO_FIX
-            N.position_covariance_type = 0
-            posPub.publish(N)
+            if 'gps' in U.status:
+                # Local radio GPS information
+                N = NavSatFix()
+                N.header.stamp = rospy.Time.now()
+                N.header.frame_id = 'mobile5G'
+                N.altitude = U.status['gps']['alt']
+                N.latitude = U.status['gps']['lat']
+                N.longitude = U.status['gps']['lon']
+                if int(U.status['gps']['fix']) > 0:
+                    N.status.status = N.status.STATUS_FIX
+                else:
+                    N.status.status = N.status.STATUS_NO_FIX
+                N.position_covariance_type = 0
+                posPub.publish(N)
 
             # Publish messages to a new topic for each new station seen.
             
