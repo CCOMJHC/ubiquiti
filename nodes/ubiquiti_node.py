@@ -21,7 +21,8 @@ from sensor_msgs.msg import NavSatFix
 rospy.init_node('ubiquiti')
     
 def run():
-    U = ubwf.UbiquitiWifi(ipaddr='192.168.100.75')
+    ipaddress = rospy.get_param("~ipaddress",'192.168.100.75')
+    U = ubwf.UbiquitiWifi(ipaddr=ipaddress)
     U.username = 'field'
     U.passwd = 'Chas3ocean!'
     U.getAirOSVersion()
