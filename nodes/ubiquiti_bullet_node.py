@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 '''
 Val Schmidt
 Center for Coastal and Ocean Mapping
@@ -35,7 +34,7 @@ def run():
 
             U.getstatus()
         except:
-            rospy.LOGINFO('Failed to get status from Ubiquiti Radio.')
+            rospy.loginfo('Failed to get status from Ubiquiti Radio.')
     
         if U.statusraw is not None:
 
