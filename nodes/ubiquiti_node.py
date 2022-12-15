@@ -87,8 +87,8 @@ def run():
                 M.local_rx_throughput = U.status['wireless']['throughput']['rx']    
                 # Distant radio information
                 M.remote_hostname = station['remote']['hostname']
-                M.remote_uplink_capacity = station['airmax']['uplink_capacity']
-                M.remote_downlink_capacity = station['airmax']['downlink_capacity']
+#                M.remote_uplink_capacity = station['airmax']['uplink_capacity']
+ #               M.remote_downlink_capacity = station['airmax']['downlink_capacity']
                 M.remote_signal = station['remote']['signal']
                 M.remote_rssi = station['remote']['rssi']
                 M.remote_noisefloor = station['remote']['noisefloor']
